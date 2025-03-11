@@ -1,0 +1,6 @@
+apim_name           = "dev-apim"
+location           = "East US"
+resource_group_name = "dev-resource-group"
+publisher_name      = "Dev Company"
+publisher_email     = "hirajabeenbhatti@gmail.com"
+sku_name            = "Developer_1"

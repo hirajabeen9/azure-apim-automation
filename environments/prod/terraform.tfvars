@@ -1,0 +1,6 @@
+apim_name           = "prod-apim"
+location           = "East US"
+resource_group_name = "prod-resource-group"
+publisher_name      = "Prod Company"
+publisher_email     = "hirajabeenbhatti@gmail.com"
+sku_name            = "Prod_1"
