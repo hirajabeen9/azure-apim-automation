@@ -28,3 +28,8 @@ variable "sku_name" {
   type        = string
   default     = "Developer_1"
 }
+
+variable "subscription_id" {}
+variable "tenant_id" {}
+variable "client_id" {}
+variable "client_secret" {}
