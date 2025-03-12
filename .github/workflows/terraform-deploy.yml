@@ -1,10 +1,9 @@
-name: "Terraform APIM Deployment"
+name: "Terraform APIM Deployment (Production)"
 
 on:
   push:
     branches:
       - main
-      - dev
   pull_request:
 
 jobs:
@@ -14,18 +13,6 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-
-    - name: Determine Environment
-      id: set-env
-      run: |
-        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-          echo "ENVIRONMENT=prod" >> $GITHUB_ENV
-        else
-          echo "ENVIRONMENT=dev" >> $GITHUB_ENV
-        fi
-
-    - name: List Directories
-      run: ls -R
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
@@ -37,48 +24,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Terraform Clean
-      run: rm -rf .terraform/ .terraform.lock.hcl
-
-    # Development
-    - name: Terraform Init (Development)
-      if: github.ref == 'refs/heads/dev'
-      working-directory: environments/dev
-      env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform init -reconfigure
-
-    - name: Terraform Validate (Development)
-      if: github.ref == 'refs/heads/dev'
-      working-directory: environments/dev
-      run: terraform validate
-
-    - name: Terraform Plan (Development)
-      if: github.ref == 'refs/heads/dev'
-      working-directory: environments/dev
-      env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform plan -var-file=terraform.tfvars
-
-    - name: Terraform Apply (Development)
-      if: github.ref == 'refs/heads/dev'
-      working-directory: environments/dev
-      env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform apply -auto-approve -var-file=terraform.tfvars
-
-    # Production
     - name: Terraform Init (Production)
-      if: github.ref == 'refs/heads/main'
       working-directory: environments/prod
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -88,12 +34,10 @@ jobs:
       run: terraform init -reconfigure
 
     - name: Terraform Validate (Production)
-      if: github.ref == 'refs/heads/main'
       working-directory: environments/prod
       run: terraform validate
 
     - name: Terraform Plan (Production)
-      if: github.ref == 'refs/heads/main'
       working-directory: environments/prod
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -103,7 +47,6 @@ jobs:
       run: terraform plan -var-file=terraform.tfvars
 
     - name: Terraform Apply (Production)
-      if: github.ref == 'refs/heads/main'
       working-directory: environments/prod
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
